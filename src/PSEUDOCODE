@@ -1,1 +1,74 @@
-//ceci est un test 
+/*calculDistanceTheorique(distanceTheoriqueActuelle,SP)
+calculVitesse
+calcuclErreurVitesse
+calculErreurDistance
+calculCorrection
+donnerVitesse*/
+
+
+
+
+//CALCULVITESSE
+
+FONCTION calculVitesse(distanceActuelle, distanceAncienne):vitesse
+    //distanceActuelle(reel): lecture de l'encodeur la plus recente
+    //distanceAncienne(reel): lecture de l'encodeur precedente
+    //vitesse(reel): vitesse de rotation en pulse par cycle
+DEBUT
+    vitesse:= positionActuelle - positionAncienne
+    Retourner vitesse
+FIN
+
+FONCTION calculErreurVitesse(vitesseActuelle,vitesseDesiree):erreurVitesse
+    //vitesseActuelle(reel): en pulses par cycle
+    //vitesseDesiree(reel): en pulses par cycle
+    //erreurVitesse(reel): en pulses par cycle
+DEBUT
+    erreurVitesse:=vitesseDesiree-vitesseActuelle
+    Retourner erreurVitesse
+FIN 
+
+
+FONCTION calculErreurCumuluee(erreurVitesse,erreurCumulee):erreurCumulee
+    //distanceActuelle(reel): en pulses
+    //distanceDesiree(reel): en pulses
+    //erreurDistance(reel): en pulses
+DEBUT
+    erreurCumulee:=erreurCumulee+erreurVitesse
+    Retourner erreurCumulee
+FIN
+
+
+
+FONCTION gestionVitesseMoteur(moteur, vitesseDesiree, Kp, Ki, distanceAncienne, erreurCumulee)
+    //moteur(entier):numero du moteur
+    //vitesseDesiree(reel): en pulses par cycle
+    //Kp(reel)
+    //Ki(reel)
+
+DEBUT
+    //distanceActuelle(reel)
+    //vitesseActuelle(reel)
+    //erreurVitesse(reel)
+
+    distanceActuelle:=lireEncodeur(moteur)
+    vitesseActuelle:=calculVitesse(distanceActuelle, distanceAncienne)
+    erreurVitesse:=calculErreurVitesse(vitesseActuelle,vitesseDesiree)
+    erreurCumulee:=calculErreurCumuluee(erreurVitesse,erreurCumulee)
+
+    correction:=calculCorrection(erreurVitesse,erreurCumulee, Kp, Ki)
+    donnerVitesse(moteur,vitesse,correction)
+
+FIN 
+
+//Fonction pour calculer la correction
+//float Kp(reel): facteur de ponderation de la vitesse
+//float Ki(reel): (facteur de ponderation de la distance
+//float correctionV (reel): correction a apporte a la vitesse
+//float erreurSomme(reel): erreur sur la distance
+//float erreurVitesse (reel): erreur sur la vitesse
+DEBUT
+	lire les valeurs Ki, Kp, erreurDistance et erreurVitesse
+	correctionV:= Ki*erreurSomme+Kp*erreurVitesse
+	retourner correctionV
+FIN
