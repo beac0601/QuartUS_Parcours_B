@@ -1,4 +1,4 @@
-FONCTION DonnerVitesse (sp:entrée,vitesse:sortie) :
+FONCTION DonnerVitesse (sp, vitesse) : cycle, pulsecycle,correction
 //sp(réel) : la commande
 //vitesse(réel) : vitesse du moteur
 //cycle(réel) : temps d'un cycle
@@ -10,7 +10,7 @@ vitesse := (sp + correction)*cycle
 MOTOR_SetSpeed := vitesse
 FIN
 
-FONCTION SommeErreur (ErreurVitesse:entrée,SommeErr:sortie) :
+FONCTION SommeErreur (ErreurVitesse,SommeErr) :
 //ErreurVitesse
 //SommeErr
 Begin
