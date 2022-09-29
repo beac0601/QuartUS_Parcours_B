@@ -8,7 +8,13 @@
 #define KP 1
 #define KI 0.5
 
-#define FACTEUR_ROT 2
+#define FACTEUR_ROT 0.39
+#define FACTEUR_ANGLE_INTERNE 26.835
+#define FACTEUR_ANGLE_EXTERNE 68.838
+
+#define NBR_ETAPES 6
+
+#define TEMPS_DE_SCAN 50
 
 float calculVitesse(float distanceActuelle, float distanceAncienne);
 float calculErreurVitesse(float vitesseActuelle, float vitesseDesiree);
@@ -16,19 +22,29 @@ float calculErreurCumuluee(float erreurVitesse, float erreurCumulee);
 void gestionVitesseMoteur(int moteur, float vitesseDesiree, float Kp, float Ki, float distanceAncienne, float distanceActuelle, float* erreurCumulee);
 float calculCorrection(float erreurVitesse, float erreurCumulee, float Ki, float Kp);
 void donnerVitesse(int moteur, float vitesseDesiree, float correction);
-
+float cmApulses(float cm);
+float degApulsesExterieur(float deg);
+float degApulsesInterieur(float deg);
+float calculDemandeVitesseAntiKick(float vitesse,float vitesseActuelle);
 
 void cycle();
 void debug();
 
-float listeAngle[] = {15,-30,45};
-float listeDistance[] = {30,45,60};
+
+float listeDistance[] = {100,45,65,172,44,100};
+float listeAngle[] = {90,-90,-45,90,-45,0};
+
+
+int arreterProgramme =0;
 
 int etapeEnCours = 0;
 int rotationEnCours = 0;
 
 float moteurG_distanceDepartMotion = 0;
 float moteurD_distanceDepartMotion = 0;
+
+int moteurG_motionTerminee = 0;
+int moteurD_motionTerminee = 0;
 
 float moteurG_distanceActuelle =0;
 float moteurG_distanceAncienne =0;
@@ -48,17 +64,22 @@ void setup() {
   BoardInit();
   ENCODER_Reset(GAUCHE);
   ENCODER_Reset(DROITE);
+  moteurG_distanceDepartMotion = ENCODER_Read(GAUCHE);
+  moteurD_distanceDepartMotion = ENCODER_Read(DROITE);
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
   
-
-  if(millis() - tempsCycle > 50 ){
+  
+  if(millis() - tempsCycle > TEMPS_DE_SCAN ){
     cycle();
   }
 
-
+  while(arreterProgramme){
+    MOTOR_SetSpeed(GAUCHE,0);
+    MOTOR_SetSpeed(DROITE,0);
+  }
 }
 
 
@@ -67,33 +88,47 @@ void cycle(){
   moteurD_distanceActuelle = ENCODER_Read(DROITE);
 
 
-  int moteurG_motionTerminee = 0;
-  int moteurD_motionTerminee = 0;
+  if(moteurD_motionTerminee && moteurG_motionTerminee){
+    if(rotationEnCours){
+      if(etapeEnCours + 1  >= NBR_ETAPES){
+        arreterProgramme =1;
+      }else{
+        etapeEnCours++;
+      }
+      rotationEnCours = 0;
+    }else{
+      rotationEnCours =1;
+    }
+
+    moteurG_motionTerminee =0;
+    moteurD_motionTerminee =0;
+    moteurG_distanceDepartMotion = ENCODER_Read(GAUCHE);
+    moteurD_distanceDepartMotion = ENCODER_Read(DROITE);
+    
+  }
+
+
 
   if(!rotationEnCours){
 
     //En deplacement lineaire
     //Si a la premiere etape, accelerer doucement
-    if(etapeEnCours == 0){
-      moteurD_vitesseDesiree = calculVitesseAcceleration(moteurG_distanceDepartMotion, moteurG_distanceActuelle);
-      moteurG_vitesseDesiree = calculVitesseAcceleration(moteurD_distanceDepartMotion, moteurD_distanceActuelle);
+    if((etapeEnCours == 0) && 0){
+      //moteurD_vitesseDesiree = calculVitesseAcceleration(moteurG_distanceDepartMotion, moteurG_distanceActuelle);
+      //moteurG_vitesseDesiree = calculVitesseAcceleration(moteurD_distanceDepartMotion, moteurD_distanceActuelle);
     }else{
         moteurD_vitesseDesiree = 52;
         moteurG_vitesseDesiree = 52;
     }
 
-    if(moteurG_distanceActuelle >= moteurG_distanceDepartMotion + listeDistance[etapeEnCours]){
+    if(moteurG_distanceActuelle >= moteurG_distanceDepartMotion + cmApulses(listeDistance[etapeEnCours])){
       moteurG_vitesseDesiree = 0;
       moteurG_motionTerminee = 1;
     }
 
-    if(moteurD_distanceActuelle >= moteurD_distanceDepartMotion + listeDistance[etapeEnCours]){
+    if(moteurD_distanceActuelle >= moteurD_distanceDepartMotion + cmApulses(listeDistance[etapeEnCours])){
       moteurD_vitesseDesiree = 0;
       moteurD_motionTerminee = 1;
-    }
-
-    if(moteurG_motionTerminee && moteurG_motionTerminee){
-      rotationEnCours = 1;
     }
 
 
@@ -105,12 +140,33 @@ void cycle(){
       moteurD_vitesseDesiree = 52;
       moteurG_vitesseDesiree = 52 * FACTEUR_ROT;
 
+    if(moteurG_distanceActuelle >= moteurG_distanceDepartMotion + degApulsesInterieur(abs(listeAngle[etapeEnCours]))){
+      moteurG_vitesseDesiree = 0;
+      moteurG_motionTerminee = 1;
+    }
 
+    if(moteurD_distanceActuelle >= moteurD_distanceDepartMotion + degApulsesExterieur(abs(listeAngle[etapeEnCours]))){
+      moteurD_vitesseDesiree = 0;
+      moteurD_motionTerminee = 1;
+    }
 
     }else{
       //rotation a droite
       moteurD_vitesseDesiree = 52 * FACTEUR_ROT;
       moteurG_vitesseDesiree = 52;
+
+
+    if(moteurG_distanceActuelle >= moteurG_distanceDepartMotion + degApulsesExterieur(abs(listeAngle[etapeEnCours]))){
+      moteurG_vitesseDesiree = 0;
+      moteurG_motionTerminee = 1;
+    }
+
+    if(moteurD_distanceActuelle >= moteurD_distanceDepartMotion + degApulsesInterieur(abs(listeAngle[etapeEnCours]))){
+      moteurD_vitesseDesiree = 0;
+      moteurD_motionTerminee = 1;
+    }
+
+
     }
   }
 
@@ -193,4 +249,24 @@ float calculCorrection(float erreurVitesse, float erreurCumulee, float Ki, float
 void donnerVitesse(int moteur, float vitesseDesiree, float correction){
   float vitesse = (vitesseDesiree + correction)/520;
   MOTOR_SetSpeed(moteur, vitesse);
+}
+
+
+float cmApulses(float cm){
+  return cm * 133.7;
+}
+
+float degApulsesExterieur(float deg){
+  return deg * FACTEUR_ANGLE_EXTERNE;
+}
+
+float degApulsesInterieur(float deg){
+  return deg * FACTEUR_ANGLE_INTERNE;
+}
+
+float calculDemandeVitesseAntiKick(float vitesseDesiree, float vitesseActuelle){
+  if(vitesseDesiree >= vitesseActuelle + 4){
+    return vitesseDesiree +4;
+  }else if(vitesseDesiree <= vitesseActuelle - 2)
+
 }
