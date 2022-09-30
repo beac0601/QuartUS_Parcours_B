@@ -15,6 +15,7 @@
 #define NBR_ETAPES 6
 
 #define TEMPS_DE_SCAN 50
+#define ACCEL_MAX 10
 
 float calculVitesse(float distanceActuelle, float distanceAncienne);
 float calculErreurVitesse(float vitesseActuelle, float vitesseDesiree);
@@ -25,14 +26,17 @@ void donnerVitesse(int moteur, float vitesseDesiree, float correction);
 float cmApulses(float cm);
 float degApulsesExterieur(float deg);
 float degApulsesInterieur(float deg);
-float calculDemandeVitesseAntiKick(float vitesse,float vitesseActuelle);
+float calculVitesseAcceleration(float vitesse,float vitesseActuelle, float distanceDepartMotion, float distanceActuelle, float ditanceAParcourir);
 
 void cycle();
 void debug();
 
 
-float listeDistance[] = {100,45,65,172,44,100};
-float listeAngle[] = {90,-90,-45,90,-45,0};
+//float listeDistance[] = {100,45,65,172,44,100};
+//float listeAngle[] = {90,-90,-45,90,-45,0};
+
+float listeDistance[] = {50,50,50,50,50,50};
+float listeAngle[] = {0,0,0,0,0,0};
 
 
 int arreterProgramme =0;
@@ -264,9 +268,9 @@ float degApulsesInterieur(float deg){
   return deg * FACTEUR_ANGLE_INTERNE;
 }
 
-float calculDemandeVitesseAntiKick(float vitesseDesiree, float vitesseActuelle){
+/*float calculVitesseAcceleration(float vitesse,float vitesseActuelle, float distanceDepartMotion, float distanceActuelle, float distanceAParcourir){
   if(vitesseDesiree >= vitesseActuelle + 4){
     return vitesseDesiree +4;
   }else if(vitesseDesiree <= vitesseActuelle - 2)
 
-}
+}*/
