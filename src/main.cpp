@@ -32,11 +32,11 @@ void cycle();
 void debug();
 
 
-//float listeDistance[] = {100,45,65,172,44,100};
-//float listeAngle[] = {90,-90,-45,90,-45,0};
+float listeDistance[] = {100,45,65,172,44,100};
+float listeAngle[] = {90,-90,-45,90,-45,0};
 
-float listeDistance[] = {50,50,50,50,50,50};
-float listeAngle[] = {0,0,0,0,0,0};
+//float listeDistance[] = {50,50,50,50,50,50};
+//float listeAngle[] = {0,0,0,0,0,0};
 
 
 int arreterProgramme =0;
@@ -77,6 +77,7 @@ void loop() {
   
   
   if(millis() - tempsCycle > TEMPS_DE_SCAN ){
+    tempsCycle = millis();
     cycle();
   }
 
@@ -106,8 +107,8 @@ void cycle(){
 
     moteurG_motionTerminee =0;
     moteurD_motionTerminee =0;
-    moteurG_distanceDepartMotion = ENCODER_Read(GAUCHE);
-    moteurD_distanceDepartMotion = ENCODER_Read(DROITE);
+    moteurG_distanceDepartMotion = moteurG_distanceActuelle;
+    moteurD_distanceDepartMotion = moteurD_distanceActuelle;
     
   }
 
@@ -178,7 +179,8 @@ void cycle(){
   gestionVitesseMoteur(GAUCHE,moteurG_vitesseDesiree,KP,KI,moteurG_distanceAncienne,moteurG_distanceActuelle,&moteurG_erreurCumulee);
   gestionVitesseMoteur(DROITE,moteurD_vitesseDesiree,KP,KI,moteurD_distanceAncienne,moteurD_distanceActuelle,&moteurD_erreurCumulee);
 
-
+  
+  
   debug();
   moteurD_distanceAncienne = moteurD_distanceActuelle;
   moteurG_distanceAncienne = moteurG_distanceActuelle;
@@ -249,9 +251,9 @@ float calculCorrection(float erreurVitesse, float erreurCumulee, float Ki, float
 }
 
 
-//Si cycle = 50ms 50% = 260 pulses/cycle 100%=520 pulses/cycle
+//Si cycle = 50ms  100%=590 pulses/cycle
 void donnerVitesse(int moteur, float vitesseDesiree, float correction){
-  float vitesse = (vitesseDesiree + correction)/520;
+  float vitesse = (vitesseDesiree + correction)/590;
   MOTOR_SetSpeed(moteur, vitesse);
 }
 
