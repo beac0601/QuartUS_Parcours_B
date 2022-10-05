@@ -6,7 +6,7 @@ const fs = require('fs')
 
 
 
-const serialport = new SerialPort({ path: 'COM3', baudRate: 9600 })
+const serialport = new SerialPort({ path: 'COM2', baudRate: 9600 })
 const parser = new ReadlineParser()
 serialport.pipe(parser)
 parser.on('data', process)
