@@ -11,9 +11,10 @@
 #define FACTEUR_ROT 0.39
 #define FACTEUR_ANGLE_INTERNE 30.1022
 #define FACTEUR_ANGLE_EXTERNE 74.9055
-#define FACTEUR_CORRECTION_ROTATION 1.005
+#define FACTEUR_CORRECTION_ROTATION 1.000
+#define DISTANCE_ROTATION_180 30.15928
 
-#define NBR_ETAPES 6
+#define NBR_ETAPES 12
 
 #define TEMPS_DE_SCAN 50
 #define PULSECYLE 560
@@ -37,8 +38,8 @@ void debug();
 //float listeDistance[] = {100,45,65,172,44,100};
 //float listeAngle[] = {90,-90,-45,90,-45,0};
 
-float listeDistance[] = {100,45,65,162,44,100};
-float listeAngle[] = {90,-90,-45,90,-45,0};
+float listeDistance[] = {100,45,65,154,44,100,100,44,154,65,45,100};
+float listeAngle[] = {90,-90,-45,90,-45,-180,45,-90,45,90,-90};
 
 //float listeDistance[] = {50,50,50,50,50,50};
 //float listeAngle[] = {0,0,0,0,0,0};
@@ -156,31 +157,46 @@ void cycle(){
       moteurG_vitesseDesiree = calculVitesseDesiree(moteurG_distanceDepartMotion,moteurG_distanceActuelle,degApulsesInterieur(abs(listeAngle[etapeEnCours])),AMAX,VMAX*FACTEUR_ROT, &moteurG_cyclesAccelEnCours,&moteurG_cyclesDecelEnCours);;
       moteurD_vitesseDesiree = calculVitesseDesiree(moteurD_distanceDepartMotion,moteurD_distanceActuelle,degApulsesExterieur(abs(listeAngle[etapeEnCours])),AMAX,VMAX, &moteurD_cyclesAccelEnCours,&moteurD_cyclesDecelEnCours);
 
-    if(moteurG_distanceActuelle >= moteurG_distanceDepartMotion + degApulsesInterieur(abs(listeAngle[etapeEnCours]))){
-      moteurG_vitesseDesiree = 0;
-      moteurG_motionTerminee = 1;
-    }
+      if(moteurG_distanceActuelle >= moteurG_distanceDepartMotion + degApulsesInterieur(abs(listeAngle[etapeEnCours]))){
+        moteurG_vitesseDesiree = 0;
+        moteurG_motionTerminee = 1;
+      }
 
-    if(moteurD_distanceActuelle >= moteurD_distanceDepartMotion + degApulsesExterieur(abs(listeAngle[etapeEnCours]))){
-      moteurD_vitesseDesiree = 0;
-      moteurD_motionTerminee = 1;
-    }
+      if(moteurD_distanceActuelle >= moteurD_distanceDepartMotion + degApulsesExterieur(abs(listeAngle[etapeEnCours]))){
+        moteurD_vitesseDesiree = 0;
+        moteurD_motionTerminee = 1;
+      }
 
+    }else if(listeAngle[etapeEnCours] == -180){
+      //rotation 180
+      moteurG_vitesseDesiree = calculVitesseDesiree(moteurG_distanceDepartMotion,moteurG_distanceActuelle,cmApulses(DISTANCE_ROTATION_180),AMAX,VMAX, &moteurG_cyclesAccelEnCours,&moteurG_cyclesDecelEnCours);;
+      moteurD_vitesseDesiree = -calculVitesseDesiree(moteurD_distanceDepartMotion,moteurD_distanceActuelle,cmApulses(DISTANCE_ROTATION_180),AMAX,VMAX, &moteurD_cyclesAccelEnCours,&moteurD_cyclesDecelEnCours);
+
+      if(moteurG_distanceActuelle >= moteurG_distanceDepartMotion + cmApulses(DISTANCE_ROTATION_180)){
+        moteurG_vitesseDesiree = 0;
+        moteurG_motionTerminee = 1;
+      }
+
+      if(moteurD_distanceActuelle <= moteurD_distanceDepartMotion - cmApulses(DISTANCE_ROTATION_180)){
+        moteurD_vitesseDesiree = 0;
+        moteurD_motionTerminee = 1;
+      }
+    
     }else{
       //rotation a droite
       moteurG_vitesseDesiree = calculVitesseDesiree(moteurG_distanceDepartMotion,moteurG_distanceActuelle,degApulsesExterieur(abs(listeAngle[etapeEnCours])),AMAX,VMAX, &moteurG_cyclesAccelEnCours,&moteurG_cyclesDecelEnCours);;
       moteurD_vitesseDesiree = calculVitesseDesiree(moteurD_distanceDepartMotion,moteurD_distanceActuelle,degApulsesInterieur(abs(listeAngle[etapeEnCours])),AMAX,VMAX*FACTEUR_ROT, &moteurD_cyclesAccelEnCours,&moteurD_cyclesDecelEnCours);
 
 
-    if(moteurG_distanceActuelle >= moteurG_distanceDepartMotion + degApulsesExterieur(abs(listeAngle[etapeEnCours]))){
-      moteurG_vitesseDesiree = 0;
-      moteurG_motionTerminee = 1;
-    }
+      if(moteurG_distanceActuelle >= moteurG_distanceDepartMotion + degApulsesExterieur(abs(listeAngle[etapeEnCours]))){
+        moteurG_vitesseDesiree = 0;
+        moteurG_motionTerminee = 1;
+      }
 
-    if(moteurD_distanceActuelle >= moteurD_distanceDepartMotion + degApulsesInterieur(abs(listeAngle[etapeEnCours]))){
-      moteurD_vitesseDesiree = 0;
-      moteurD_motionTerminee = 1;
-    }
+      if(moteurD_distanceActuelle >= moteurD_distanceDepartMotion + degApulsesInterieur(abs(listeAngle[etapeEnCours]))){
+        moteurD_vitesseDesiree = 0;
+        moteurD_motionTerminee = 1;
+      }
 
 
     }
@@ -282,7 +298,7 @@ float degApulsesInterieur(float deg){
 }
 
 float calculVitesseDesiree(float distanceDepartMotion, float distanceActuelle, float distanceAParcourir, float amax, float vmax, int* cyclesAccelEnCours,int* cyclesDecelEnCours){
-  float distanceParcourue = distanceActuelle-distanceDepartMotion;
+  float distanceParcourue = abs(distanceActuelle-distanceDepartMotion);
   int tier =0;
   float deltax = (vmax*vmax)/(2*amax);
   float vitesse = 0;
