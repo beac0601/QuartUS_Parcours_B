@@ -14,8 +14,8 @@ parser.on('data', process)
 
 serialport.on('close', console.log)
 
-var gauche = "const PROGMEM float moteurG_ListeVitesse[] = {"
-var droite = "const PROGMEM float moteurD_ListeVitesse[] = {"
+var gauche = "const float PROGMEM moteurG_ListeVitesse[] = {"
+var droite = "const float PROGMEM moteurD_ListeVitesse[] = {"
 
 function process(data){
 	
@@ -25,6 +25,8 @@ function process(data){
 				fs.writeFileSync("GAUCHE.txt" , gauche.slice(0,-1) + "};\n")
 				
 				fs.writeFileSync("DROITE.txt" , droite.slice(0,-1) + "};\n")
+
+				fs.writeFileSync("data.h" , gauche.slice(0,-1) + "};\n" + droite.slice(0,-1) + "};\n")
 				return
 			}
 			
