@@ -14,8 +14,8 @@ parser.on('data', process)
 
 serialport.on('close', console.log)
 
-var gauche = "float moteurG_ListeVitesse[] = {"
-var droite = "float moteurD_ListeVitesse[] = {"
+var gauche = "const PROGMEM float moteurG_ListeVitesse[] = {"
+var droite = "const PROGMEM float moteurD_ListeVitesse[] = {"
 
 function process(data){
 	
