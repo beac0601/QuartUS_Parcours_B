@@ -81,8 +81,8 @@ void loop() {
   
   
   if(millis() - tempsCycle > TEMPS_DE_SCAN ){
-    cycle();
     tempsCycle = millis();
+    cycle();
   }
 
   while(arreterProgramme){
@@ -218,7 +218,7 @@ void debug(){
   Serial.print(",");
   Serial.print(moteurD_distanceActuelle - moteurD_distanceAncienne);
   Serial.print(",");
-  Serial.print(moteurD_ListeVitesse[etapeEnCours]);
+  Serial.print(pgm_read_float(moteurD_ListeVitesse + etapeEnCours));
   Serial.println("");
 }
 
