@@ -8,18 +8,25 @@
 #define KP 0.5
 #define KI 0.2
 
-#define FACTEUR_ROT 0.39
-#define FACTEUR_ANGLE_INTERNE 30.1022
-#define FACTEUR_ANGLE_EXTERNE 74.9055
-#define FACTEUR_CORRECTION_ROTATION 1.000
-#define DISTANCE_ROTATION_180 30.15928
+//#define FACTEUR_ROT 0.39
+//#define FACTEUR_ANGLE_INTERNE 30.1022
+//#define FACTEUR_ANGLE_EXTERNE 74.9055
+//#define FACTEUR_CORRECTION_ROTATION 0.99
+//#define DISTANCE_ROTATION_180 30.15928
+//#define DISTANCE_ROTATION_180 29.2
+
+#define FACTEUR_ROT 0.415
+#define FACTEUR_ANGLE_INTERNE 30.8
+#define FACTEUR_ANGLE_EXTERNE 74.2
+#define FACTEUR_CORRECTION_ROTATION 1.00
+#define DISTANCE_ROTATION_180 29.25
 
 #define NBR_ETAPES 12
 
 #define TEMPS_DE_SCAN 50
 #define PULSECYLE 560
-#define AMAX 15
-#define VMAX 300
+#define AMAX 12
+#define VMAX 350
 
 float calculVitesse(float distanceActuelle, float distanceAncienne);
 float calculErreurVitesse(float vitesseActuelle, float vitesseDesiree);
@@ -38,7 +45,7 @@ void debug();
 //float listeDistance[] = {100,45,65,172,44,100};
 //float listeAngle[] = {90,-90,-45,90,-45,0};
 
-float listeDistance[] = {100,45,65,154,44,100,100,44,154,65,45,100};
+float listeDistance[] = {100,45,65,150,44,60,60,36,150,65,50,100};
 float listeAngle[] = {90,-90,-45,90,-45,-180,45,-90,45,90,-90};
 
 //float listeDistance[] = {50,50,50,50,50,50};
