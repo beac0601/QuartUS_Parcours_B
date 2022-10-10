@@ -9,14 +9,11 @@
 #define KP 0.8
 #define KI 0.3
 
-#define FACTEUR_ROT 0.39
-#define FACTEUR_ANGLE_INTERNE 26.835
-#define FACTEUR_ANGLE_EXTERNE 68.838
 
 #define NBR_ETAPES 6
 
 #define TEMPS_DE_SCAN 50
-#define ACCEL_MAX 10
+
 
 float calculVitesse(float distanceActuelle, float distanceAncienne);
 float calculErreurVitesse(float vitesseActuelle, float vitesseDesiree);
@@ -46,10 +43,7 @@ int arreterProgramme =0;
 int relecture =0;
 
 int etapeEnCours = 0;
-int rotationEnCours = 0;
 
-float moteurG_distanceDepartMotion = 0;
-float moteurD_distanceDepartMotion = 0;
 
 int moteurG_motionTerminee = 0;
 int moteurD_motionTerminee = 0;
@@ -72,8 +66,6 @@ void setup() {
   BoardInit();
   ENCODER_Reset(GAUCHE);
   ENCODER_Reset(DROITE);
-  moteurG_distanceDepartMotion = ENCODER_Read(GAUCHE);
-  moteurD_distanceDepartMotion = ENCODER_Read(DROITE);
 }
 
 void loop() {
@@ -114,104 +106,6 @@ void cycle(){
   moteurG_distanceAncienne = moteurG_distanceActuelle;
 }
 
-
-/*void cycle(){
-  moteurG_distanceActuelle = ENCODER_Read(GAUCHE);
-  moteurD_distanceActuelle = ENCODER_Read(DROITE);
-
-
-  if(moteurD_motionTerminee && moteurG_motionTerminee){
-    if(rotationEnCours){
-      if(etapeEnCours + 1  >= NBR_ETAPES){
-        arreterProgramme =1;
-      }else{
-        etapeEnCours++;
-      }
-      rotationEnCours = 0;
-    }else{
-      rotationEnCours =1;
-    }
-
-    moteurG_motionTerminee =0;
-    moteurD_motionTerminee =0;
-    moteurG_distanceDepartMotion = ENCODER_Read(GAUCHE);
-    moteurD_distanceDepartMotion = ENCODER_Read(DROITE);
-    
-  }
-
-
-
-  if(!rotationEnCours){
-
-    //En deplacement lineaire
-    //Si a la premiere etape, accelerer doucement
-    if((etapeEnCours == 0) && 0){
-      //moteurD_vitesseDesiree = calculVitesseAcceleration(moteurG_distanceDepartMotion, moteurG_distanceActuelle);
-      //moteurG_vitesseDesiree = calculVitesseAcceleration(moteurD_distanceDepartMotion, moteurD_distanceActuelle);
-    }else{
-        moteurD_vitesseDesiree = 52;
-        moteurG_vitesseDesiree = 52;
-    }
-
-    if(moteurG_distanceActuelle >= moteurG_distanceDepartMotion + cmApulses(listeDistance[etapeEnCours])){
-      moteurG_vitesseDesiree = 0;
-      moteurG_motionTerminee = 1;
-    }
-
-    if(moteurD_distanceActuelle >= moteurD_distanceDepartMotion + cmApulses(listeDistance[etapeEnCours])){
-      moteurD_vitesseDesiree = 0;
-      moteurD_motionTerminee = 1;
-    }
-
-
-  }else{
-    //En rotation
-
-    //rotation a gauche
-    if(listeAngle[etapeEnCours] > 0){
-      moteurD_vitesseDesiree = 52;
-      moteurG_vitesseDesiree = 52 * FACTEUR_ROT;
-
-    if(moteurG_distanceActuelle >= moteurG_distanceDepartMotion + degApulsesInterieur(abs(listeAngle[etapeEnCours]))){
-      moteurG_vitesseDesiree = 0;
-      moteurG_motionTerminee = 1;
-    }
-
-    if(moteurD_distanceActuelle >= moteurD_distanceDepartMotion + degApulsesExterieur(abs(listeAngle[etapeEnCours]))){
-      moteurD_vitesseDesiree = 0;
-      moteurD_motionTerminee = 1;
-    }
-
-    }else{
-      //rotation a droite
-      moteurD_vitesseDesiree = 52 * FACTEUR_ROT;
-      moteurG_vitesseDesiree = 52;
-
-
-    if(moteurG_distanceActuelle >= moteurG_distanceDepartMotion + degApulsesExterieur(abs(listeAngle[etapeEnCours]))){
-      moteurG_vitesseDesiree = 0;
-      moteurG_motionTerminee = 1;
-    }
-
-    if(moteurD_distanceActuelle >= moteurD_distanceDepartMotion + degApulsesInterieur(abs(listeAngle[etapeEnCours]))){
-      moteurD_vitesseDesiree = 0;
-      moteurD_motionTerminee = 1;
-    }
-
-
-    }
-  }
-
-
-  gestionVitesseMoteur(GAUCHE,moteurG_vitesseDesiree,KP,KI,moteurG_distanceAncienne,moteurG_distanceActuelle,&moteurG_erreurCumulee);
-  gestionVitesseMoteur(DROITE,moteurD_vitesseDesiree,KP,KI,moteurD_distanceAncienne,moteurD_distanceActuelle,&moteurD_erreurCumulee);
-
-
-  debug();
-  moteurD_distanceAncienne = moteurD_distanceActuelle;
-  moteurG_distanceAncienne = moteurG_distanceActuelle;
-}
-*/
 
 void debug(){
   Serial.print(moteurG_distanceActuelle - moteurG_distanceAncienne);
@@ -285,15 +179,5 @@ void donnerVitesse(int moteur, float vitesseDesiree, float correction){
 }
 
 
-float cmApulses(float cm){
-  return cm * 133.7;
-}
 
-float degApulsesExterieur(float deg){
-  return deg * FACTEUR_ANGLE_EXTERNE;
-}
-
-float degApulsesInterieur(float deg){
-  return deg * FACTEUR_ANGLE_INTERNE;
-}
 
