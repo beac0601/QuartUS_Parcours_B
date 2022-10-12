@@ -48,8 +48,7 @@ void debug();
 float listeDistance[] = {100,45,65,150,44,60,60,36,150,65,50,100};
 float listeAngle[] = {90,-90,-45,90,-45,-180,45,-90,45,90,-90};
 
-//float listeDistance[] = {50,50,50,50,50,50};
-//float listeAngle[] = {0,0,0,0,0,0};
+
 
 
 int arreterProgramme =0;
