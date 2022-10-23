@@ -21,7 +21,7 @@
 #define FACTEUR_CORRECTION_ROTATION 1.00
 #define DISTANCE_ROTATION_180 29.25
 
-#define NBR_ETAPES 12
+#define NBR_ETAPES 17
 
 #define TEMPS_DE_SCAN 50
 #define PULSECYLE 560
@@ -45,13 +45,13 @@ void debug();
 //float listeDistance[] = {100,45,65,172,44,100};
 //float listeAngle[] = {90,-90,-45,90,-45,0};
 
-float listeDistance[] = {100,45,65,150,44,60,60,36,150,65,50,100};
-float listeAngle[] = {90,-90,-45,90,-45,-180,45,-90,45,90,-90};
+float listeDistance[] =   {200,   55,   0,    0,    60,   0,    110/**/,     215,    0,       0,     60,    0,   60,    10,    0,    55,   210};
+float listeAngle[] =      {90,    -90,  -90,  90,   -90,  90,   -180/**/,    -180,   -180,    -180,  90,   90,  -90,   90,   90,   -90,  0};
 
 
 
 
-int arreterProgramme =0;
+int arreterProgramme =1;
 
 int etapeEnCours = 0;
 int rotationEnCours = 0;
@@ -92,7 +92,6 @@ void setup() {
 void loop() {
   // put your main code here, to run repeatedly:
   
-  
   if(millis() - tempsCycle > TEMPS_DE_SCAN ){
     tempsCycle = millis();
     cycle();
@@ -101,6 +100,9 @@ void loop() {
   while(arreterProgramme){
     MOTOR_SetSpeed(GAUCHE,0);
     MOTOR_SetSpeed(DROITE,0);
+    if(ROBUS_IsBumper(3)){
+      arreterProgramme = 0;
+    }
   }
 }
 
